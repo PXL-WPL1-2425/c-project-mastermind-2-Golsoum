@@ -48,7 +48,49 @@ namespace mastermind_1
             FillComboBoxes(ref allColors);
             
         }
+      
+        private bool IsCodeCracked() 
+        {
+            string[] userPickedColors =
+            {
+                firstComboBox.SelectedItem?.ToString(),
+                 secondComboBox.SelectedItem?.ToString(),
+                 thirdComboBox.SelectedItem?.ToString(),
+                 fourthComboBox.SelectedItem?.ToString()
+            };
 
+            return userPickedColors.SequenceEqual(chosenColor);
+             }
+        private void AskToPlayAgain() {
+            var result = MessageBox.Show($"You failed! De correcte code was {string.Join(", ", chosenColor)}. Nog eens proberen?", "Failed", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (result == MessageBoxResult.Yes)
+            {
+                ResetGame();
+            }
+            else
+            {
+                Application.Current.Shutdown();
+            }
+        }
+        private void EnableInputs()
+        {
+            firstComboBox.IsEnabled = true;
+            secondComboBox.IsEnabled = true;
+            thirdComboBox.IsEnabled = true;
+            fourthComboBox.IsEnabled = true;
+            controlButton.IsEnabled = true;
+        }
+      private void ResetGame() {
+
+            GenerateCode();
+            historyListBox.Items.Clear();
+
+            scoreLabel.Content = $"je score: 0";
+            attempts = 1;
+            Mastermind.Title = $"attempts: {attempts}";
+
+            EnableInputs();
+                }
         private int CalculateScore(string[] userColors)
         {
             int score = 0;
@@ -212,18 +254,27 @@ namespace mastermind_1
         }
         private void HandleAttempt()
         {
-            
+          
            
-            if (attempts > 10) 
+            if (attempts >= 10) 
             {
                 
                 StopCountDown();
-                MessageBox.Show("Je hebt al je pogingen gebruikt", "Pogingen", MessageBoxButton.OK);
+                MessageBox.Show($"Je hebt al je pogingen gebruikt! De geheime code was: {string.Join(", ", chosenColor)}", "Spel over", MessageBoxButton.OK, MessageBoxImage.Information);
                 DisableInput();
+                AskToPlayAgain();
                 return;
             }
+            if(IsCodeCracked())
+            {
+                StopCountDown();
+                MessageBox.Show($"Code is gekraakt in {attempts} pogingen. Wil je nog eens?", "WINNER", MessageBoxButton.YesNo);
+                AskToPlayAgain();
+                return;
+            }
+
             attempts++;
-            Mastermind.Title = $"Poging {attempts}";
+            Mastermind.Title = $"Poging {attempts}/10";
             StartCountDown(); 
         }
         private void FillComboBoxes(ref string[] items)
