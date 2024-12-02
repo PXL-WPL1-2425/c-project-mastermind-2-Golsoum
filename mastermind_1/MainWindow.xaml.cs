@@ -49,6 +49,41 @@ namespace mastermind_1
             
         }
 
+        private int CalculateScore(string[] userColors)
+        {
+            int score = 0;
+            Dictionary<string, int> colorCounts = new Dictionary<string, int>();
+
+            foreach (var color in chosenColor)
+            {
+                if (colorCounts.ContainsKey(color))
+                {
+                    colorCounts[color]++;
+                }
+
+                else
+                {
+                    colorCounts[color] = 1;
+                } 
+            }
+
+                for (int i = 0; i < userColors.Length; i++) {
+                    if (userColors[i] == chosenColor[i])
+                    {
+                        colorCounts[userColors[i]]--;
+                    }
+                    else if (colorCounts.ContainsKey(userColors[i]) && colorCounts[userColors[i]] > 0) {
+                        score += 1;
+                        colorCounts[userColors[i]]--;
+                    }
+                    else
+                    {
+                        score += 2;
+                    }
+                }
+            
+            return score;
+        }
         private string GenerateFeedback(string[] userColors)
         {
             int correctPosition = 0;
@@ -254,8 +289,14 @@ namespace mastermind_1
                                  thirdComboBox.SelectedItem.ToString(),
                                  fourthComboBox.SelectedItem.ToString() 
             };  
+          
+
+            int score = CalculateScore(userPickedColors);
+            scoreLabel.Content = $"je score: {score}";
+
             string feedback = GenerateFeedback(userPickedColors);
             UpdateHistory(userPickedColors, feedback);
+
 
             for (int i = 0; i< userPickedColors.Length; i++)
             {
