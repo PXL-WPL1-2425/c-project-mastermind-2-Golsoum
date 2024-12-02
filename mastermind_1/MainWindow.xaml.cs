@@ -49,6 +49,48 @@ namespace mastermind_1
             
         }
 
+        private string GenerateFeedback(string[] userColors)
+        {
+            int correctPosition = 0;
+            int correctColor = 0;
+            Dictionary<string, int> colorCounts = new Dictionary<string, int>();
+
+            foreach (var color in chosenColor) { 
+            
+                if(colorCounts.ContainsKey(color))
+                {
+                    colorCounts[color]++;
+                }
+                else
+                {
+                    colorCounts[color] = 1;
+                }
+                    }
+
+            for (int i = 1; i < userColors.Length; i++) {
+                if (userColors[i] == chosenColor[i]) {
+                    correctPosition++;
+                    colorCounts[userColors[i]]--;
+                }
+            
+            }
+
+            for(int i = 0; i < userColors.Length; i++) {
+
+                if (userColors[i] != chosenColor[i] && colorCounts.ContainsKey(userColors[i]) && colorCounts[userColors[i]] > 0)
+                {
+                    correctColor++;
+                    colorCounts[userColors[i]]--;
+                }
+            }
+            return $"{correctPosition} red, {correctColor} white";
+
+        }
+        private void UpdateHistory(string[] userColors, string feedback)
+        {
+            string attempt = $"{string.Join(", ", userColors)} - feedback: {feedback}";
+            historyListBox.Items.Add(attempt);
+        }
         private void DisableInput()
         {
             firstComboBox.IsEnabled = false;
@@ -212,6 +254,8 @@ namespace mastermind_1
                                  thirdComboBox.SelectedItem.ToString(),
                                  fourthComboBox.SelectedItem.ToString() 
             };  
+            string feedback = GenerateFeedback(userPickedColors);
+            UpdateHistory(userPickedColors, feedback);
 
             for (int i = 0; i< userPickedColors.Length; i++)
             {
