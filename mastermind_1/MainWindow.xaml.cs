@@ -28,7 +28,7 @@ namespace mastermind_1
         {
             
             InitializeComponent();
-
+            this.Closing += Mastermind_Closing;
             this.KeyDown += (s, e) =>
             {
                 if (e.Key == Key.F12 && Keyboard.Modifiers == ModifierKeys.Control)
@@ -46,9 +46,18 @@ namespace mastermind_1
 
             codeTextBox.Text = $"{string.Join(", ", chosenColor)}";
             FillComboBoxes(ref allColors);
-            
+
         }
-      
+       
+        private void Mastermind_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            var result = MessageBox.Show("Wilt u het spel vroegtijdig beeindigen?", $"poging {attempts}/10", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+       if(result == MessageBoxResult.No)
+            {
+                e.Cancel = true;
+            }
+        
+        }
         private bool IsCodeCracked() 
         {
             string[] userPickedColors =
